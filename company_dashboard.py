@@ -12,7 +12,7 @@ def display_company_title(financials_ticker):
     st.title(f"{financials_ticker.info['longName']} ({financials_ticker.info['symbol']})")
     diff = financials_ticker.info['currentPrice'] - financials_ticker.info['previousClose']
     diff_percent = (diff*100)/(financials_ticker.info['currentPrice'])
-    diff_class = "red" if diff < 0 else ""
+    diff_class = "red" if diff < 0 else "green"
     st.markdown(f"""
     <p class="company_title">
                 <span>{financials_ticker.info['currentPrice']:,}</span>   

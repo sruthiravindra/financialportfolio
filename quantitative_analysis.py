@@ -47,7 +47,7 @@ def display_cgar(income_statement, balance_sheet, cash_flow_statement):
     pat_values = income_statement.loc['Net Income From Continuing Operation Net Minority Interest']
     ebitda_values = income_statement.loc['EBITDA']
 
-    
+    y_period = len(total_revenue_values)-1
     # Calculate CAGR for each metric
     total_revenue_cagr = calculate_cagr(total_revenue_values.iloc[0], total_revenue_values.iloc[-1], len(total_revenue_values) - 1)
     pat_cagr = calculate_cagr(pat_values.iloc[0], pat_values.iloc[-1], len(pat_values) - 1)
@@ -69,7 +69,7 @@ def display_cgar(income_statement, balance_sheet, cash_flow_statement):
         st.table(total_revenue)
         st.markdown(f"""
 <p class='ok'>
-Above shows the value of CAGR computed for the selected period.<br>
+Above shows the value of CAGR computed for a period of {y_period} years.<br>
 We can see Sales CAGR is {total_revenue['Total Revenue']['CAGR']}, EBITDA CAGR is {total_revenue['EBITDA']['CAGR']} and PAT CAGR is {total_revenue['PAT']['CAGR']}.<br
 </p>
 """, unsafe_allow_html=True)

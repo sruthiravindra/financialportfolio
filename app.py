@@ -57,6 +57,9 @@ font-size: 1.50rem
 .company_title .red{
 color:red;
 }
+.company_title .green{
+color:green;
+}
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
