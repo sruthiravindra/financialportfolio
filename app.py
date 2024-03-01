@@ -55,7 +55,7 @@ st.markdown(custom_css, unsafe_allow_html=True)
 stocks=['TCS.NS', 'PERSISTENT.NS', 'HCLTECH.NS', 'ITC.NS', 'BRITANNIA.NS', 'HINDUNILVR.NS', 'RELIANCE.NS', 'OIL.NS', 'ONGC.NS']
 selected_dropdown = st.sidebar.selectbox("Select:", ["My Profile", "Company Dashboard"])
 
-n_years = st.sidebar.slider("Year duration:", 1,5, value=5)
+n_years = st.sidebar.slider("Year duration2:", 1,5, value=5)
 
 period = n_years*365
 end_date = date.today()
