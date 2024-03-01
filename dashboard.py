@@ -117,7 +117,7 @@ def my_portfolio(ticker_symbols, start_date, end_date):
         # Plot a pie chart to visualize portfolio allocation
         fig =plt.figure(figsize=(4, 4))
         plt.bar(ticker_symbols, optimal_weights)
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=90)
         plt.xlabel("Assets")
         plt.ylabel("Optimal weights")
         plt.title('Optimal Portfolio Weights')
