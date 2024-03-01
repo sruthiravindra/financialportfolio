@@ -4,7 +4,44 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-from download_from_yahoo import download_financials_ds_for_portfolio
+from download_from_yahoo import download_financials_ds_for_portfolio, get_sectors_for_tickers, download_financials_info
+
+def get_filter_table_dataset(ticker_symbols, portfolio_allocation):
+
+
+    data = {
+    'Ticker': [],
+    'Company Name': [],
+    'Current Price': [],
+    'Change in Price': [],
+    'Quantity': [],
+    'Total': [],
+    'Sector': []
+    }
+
+    for ticker in ticker_symbols:
+        company = download_financials_info(ticker)
+
+
+
+        total = portfolio_allocation[portfolio_allocation['Asset'] == ticker]['Value (INR)'].iloc[0]
+        quantity = total/company.info['currentPrice']
+
+        data['Ticker'].append(ticker)
+        data['Company Name'].append(company.info.get('longName', 'N/A'))
+        data['Current Price'].append(company.info.get('currentPrice', 'N/A'))
+        data['Change in Price'].append(company.info['currentPrice'] - company.info['previousClose'])
+        data['Quantity'].append(int(quantity))
+        data['Total'].append(total)
+        data['Sector'].append(company.info.get('sector', 'N/A'))
+        # # Add more fields as needed
+
+    # Create a DataFrame
+    df = pd.DataFrame(data)
+
+    # Display the filterable table
+    st.table(df)
+  
 
 # Define a function to download historical data and calculate variance-covariance matrix
 def calculate_covariance_matrix(ticker_symbols, start_date, end_date):
@@ -27,6 +64,12 @@ def calculate_covariance_matrix(ticker_symbols, start_date, end_date):
 # We perform optimization using the Sequential Least Squares Programming (SLSQP) method from scipy.optimize to obtain the optimal portfolio weights.
 # We display the optimal portfolio weights.
 def my_portfolio(ticker_symbols, start_date, end_date):
+
+    st.markdown("<h1 style='text-align: center;;'>My Portfolio</h1>", unsafe_allow_html=True)
+
+
+    # And you have a dictionary mapping assets to their sectors
+    asset_to_sector =get_sectors_for_tickers(ticker_symbols)
 
     # Calculate covariance matrix
     cov_matrix, log_returns, data = calculate_covariance_matrix(ticker_symbols, start_date, end_date)
@@ -73,6 +116,12 @@ def my_portfolio(ticker_symbols, start_date, end_date):
     # Create a DataFrame for asset values
     portfolio_allocation = pd.DataFrame({'Asset': ticker_symbols, 'Value (INR)': asset_values})
 
+    # Add a new 'Sector' column to portfolio_allocation based on the dictionary mapping
+    portfolio_allocation['Sector'] = portfolio_allocation['Asset'].map(asset_to_sector)
+
+    # Group assets by sector and sum the values for each sector
+    sector_allocation = portfolio_allocation.groupby('Sector')['Value (INR)'].sum().reset_index()
+
 
     # Calculate optimal portfolio return
     optimal_portfolio_return = expected_returns(optimal_weights, log_returns)
@@ -82,6 +131,26 @@ def my_portfolio(ticker_symbols, start_date, end_date):
 
     # Calculate optimal sharpe ratio
     optimal_sharpe_ratio = sharpe_ratio(optimal_weights,log_returns, cov_matrix, risk_free_rate)
+
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        # Plot a pie chart to visualize portfolio allocation
+        fig =plt.figure(figsize=(5, 5))
+        plt.pie(portfolio_allocation['Value (INR)'], labels=portfolio_allocation['Asset'], autopct='%1.1f%%', startangle=140)
+        plt.title('Portfolio Allocation')
+        plt.axis('equal')
+        st.pyplot(fig)
+    with col2:
+        # Plot a pie chart to visualize sector-wise allocation
+        fig = plt.figure(figsize=(5, 5))
+        plt.pie(sector_allocation['Value (INR)'], labels=sector_allocation['Sector'], autopct='%1.1f%%', startangle=140)
+        plt.title('Sector-wise Portfolio Allocation')
+        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        st.pyplot(fig)
+
+
+    get_filter_table_dataset(ticker_symbols, portfolio_allocation)
 
     st.write(f"Adjusted Close Stock Price for all tickers for the period {start_date} to {end_date}")
     st.write(data) 
@@ -104,16 +173,11 @@ def my_portfolio(ticker_symbols, start_date, end_date):
         Sharpe Ratio: {optimal_sharpe_ratio:.4f}
         </p>
         """, unsafe_allow_html=True)
+ 
 
+          
     col1, col2 = st.columns(2)
     with col1:
-        # Plot a pie chart to visualize portfolio allocation
-        fig =plt.figure(figsize=(5, 5))
-        plt.pie(portfolio_allocation['Value (INR)'], labels=portfolio_allocation['Asset'], autopct='%1.1f%%', startangle=140)
-        plt.title('Portfolio Allocation')
-        plt.axis('equal')
-        st.pyplot(fig)
-    with col2:
         # Plot a pie chart to visualize portfolio allocation
         fig =plt.figure(figsize=(4, 4))
         plt.bar(ticker_symbols, optimal_weights)
@@ -121,18 +185,20 @@ def my_portfolio(ticker_symbols, start_date, end_date):
         plt.xlabel("Assets")
         plt.ylabel("Optimal weights")
         plt.title('Optimal Portfolio Weights')
-        st.pyplot(fig)  
+        st.pyplot(fig) 
+    with col2:
+        fig =plt.figure(figsize=(10, 8))
+        sns.heatmap(cov_matrix, annot=True, cmap='coolwarm', fmt=".5f", linewidths=.5)
+        plt.title('Heatmap of Correlation')
+        st.pyplot(fig)
 
-          
+
     # Create heatmap
     st.write('Variance-Covariance Matrix:')
     st.write(cov_matrix)
 
 
     
-    fig =plt.figure(figsize=(10, 8))
-    sns.heatmap(cov_matrix, annot=True, cmap='coolwarm', fmt=".5f", linewidths=.5)
-    plt.title('Heatmap of Correlation')
-    st.pyplot(fig)
+    
 
     return

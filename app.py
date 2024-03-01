@@ -47,6 +47,16 @@ padding:10px
     background-color:red;
     color:white; 
 }
+.company_title{
+font-size: 2.00rem;;
+font-weight:bold;
+}
+.company_title .sub{
+font-size: 1.50rem
+}
+.company_title .red{
+color:red;
+}
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)

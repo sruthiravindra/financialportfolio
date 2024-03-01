@@ -16,7 +16,7 @@ def display_summary(financials_ticker):
         st.markdown(f"**Open:** {info['open']:,}")
     with col2:
         st.markdown(f"**Market Cap:** {info['marketCap']:,}")
-        st.markdown(f"**P/E Ratio:** {info['forwardPE']}")
+        st.markdown(f"**P/E Ratio:** {info['trailingPE']:.2f}")
         st.markdown(f"**Dividend Yield:** {info['dividendYield'] * 100:.2f}%")
         st.markdown(f"**EPS (TTM):** {info['trailingEps']}")
 

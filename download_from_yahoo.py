@@ -23,3 +23,20 @@ def download_financials(financials_ticker):
     balance_sheet = financials_ticker.balancesheet
     cash_flow_statement = financials_ticker.cashflow
     return income_statement, balance_sheet, cash_flow_statement
+
+def get_sector(ticker):
+    # Fetch ticker information
+    ticker_info = yf.Ticker(ticker)
+    
+    # Get sector information
+    sector = ticker_info.info.get('sector', 'N/A')
+    
+    return sector
+
+@st.cache_resource
+def get_sectors_for_tickers(tickers):
+    sectors = {}
+    for ticker in tickers:
+        sector = get_sector(ticker)
+        sectors[ticker] = sector
+    return sectors
