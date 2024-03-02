@@ -64,13 +64,42 @@ def display_cgar(income_statement, balance_sheet, cash_flow_statement):
     total_revenue['PAT']['CAGR'] = '{:.2%}'.format(pat_cagr)
     total_revenue['EBITDA']['CAGR'] = '{:.2%}'.format(ebitda_cagr)
     
+    if total_revenue_cagr <= 0.15:
+        style_rev = 'medium'
+        style_edi = 'medium'
+    elif total_revenue_cagr < 0.25:
+        style_rev = 'good'
+        style_edi = 'good'
+    else:
+        style_rev = 'excellent'
+        style_edi = 'excellent'
+    
+    if ebitda_cagr <= 0.15:
+        style_ebi = 'medium'
+    elif ebitda_cagr < 0.25:
+        style_ebi = 'good'
+    else:
+        style_ebi = 'excellent'
+            
+    if pat_cagr <= 0.10:
+        style_pat = 'medium'
+    elif pat_cagr < 0.15:
+        style_pat = 'good'
+    else:
+        style_pat = 'excellent'
+
     # Display table
     try:
         st.table(total_revenue)
         st.markdown(f"""
 <p class='ok'>
-Above shows the value of CAGR computed for a period of {y_period} years.<br>
-We can see Sales CAGR is {total_revenue['Total Revenue']['CAGR']}, EBITDA CAGR is {total_revenue['EBITDA']['CAGR']} and PAT CAGR is {total_revenue['PAT']['CAGR']}.<br
+Sales CAGR metric shows the average annual growth rate of the company's sales revenue over last {y_period} years.<br>
+EBIDTA CAGR metric represents the profitability of a company's core operations over last {y_period} years.<br>
+PAT CAGR shows the average annual growth rate of the company's net profit over last {y_period} years.<br>
+We can see Sales CAGR is <span class='{style_rev}'>{total_revenue['Total Revenue']['CAGR']}</span>, 
+EBITDA CAGR is <span class='{style_ebi}'>{total_revenue['EBITDA']['CAGR']}</span> and 
+PAT CAGR is <span class='{style_pat}'>{total_revenue['PAT']['CAGR']}</spam>.<br>
+
 </p>
 """, unsafe_allow_html=True)
 #         From this we can infer that there may be an increase in the operating expense is higher than revenue which has caused the EBITDA average growth to be lower than the sales.<br>
@@ -90,10 +119,12 @@ def display_debt_to_equity(income_statement, balance_sheet, cash_flow_statement)
 
     st.header("Analysis Based on Debt To Equity Ratio")
     st.markdown(f"Debt-to-Equity Ratio is : {debt_to_equity_ratio:.2f}")
-    if(debt_to_equity_ratio<1):
-        st.markdown("<p class='excellent'>Debt-to-Equity Ratio is less 1 is a positive sign indicating equity is more than debt <p>", unsafe_allow_html=True)
+    if(debt_to_equity_ratio > 1):
+        st.markdown("<p class='danger'>Debt-to-Equity Ratio is greater than 1 indicating danger. <p>", unsafe_allow_html=True)
+    elif(debt_to_equity_ratio > 0.01):
+        st.markdown("<p class='good'>Debt-to-Equity Ratio indicating a balanced or conservative approach to financing.<p>", unsafe_allow_html=True)
     else:
-        st.markdown("<p class='danger'>Debt-to-Equity Ratio is more 1 is a danger sign indicating debt is more than equity <p>", unsafe_allow_html=True)
+        st.markdown("<p class='excellent'>Debt-to-Equity ratio of 0, implying no debt in its capital structure. <p>", unsafe_allow_html=True)
 
 
 
@@ -120,6 +151,7 @@ def display_pe_ratio(income_statement, balance_sheet, cash_flow_statement, finan
 
     st.header("Analysis Based on PE Ratio")
     st.table(display_table)
+    st.markdown("This ratio compares a company's stock price to its earnings per share. ")
     if(PE_ratio < 20 ):
         st.markdown("<p class='orange'>suggests a moderate valuation for the company's stock, with moderate growth expectations and a balanced risk profile.<p>", unsafe_allow_html=True)
     else:
@@ -145,7 +177,8 @@ def display_roe(income_statement, balance_sheet, cash_flow_statement, financials
     st.header("Analysis Based on ROE")
     st.table(display_table)
     st.markdown(f"Return on Equity (ROE): {roe:.2f}%")
-    if(roe < 10 ):
+    st.markdown("This metric shows how much profit a company generates from its shareholders' equity. ")
+    if(roe < 30 ):
         st.markdown("<p class='orange'>indicates moderate profitability and suggests that the company is generating a reasonable return on its shareholders' equity. <p>", unsafe_allow_html=True)
     else:
         st.markdown("<p class='excellent'>The ROE considered quite high and indicates that the company is generating significant profits relative to its equity base. <p>", unsafe_allow_html=True)

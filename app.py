@@ -47,6 +47,14 @@ padding:10px
     background-color:red;
     color:white; 
 }
+.medium{
+    background-color:orange;
+    color:white; 
+}
+.good{
+    background-color:yellow;
+    color:black; 
+}
 .company_title{
 font-size: 2.00rem;;
 font-weight:bold;
