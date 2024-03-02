@@ -87,7 +87,7 @@ def my_portfolio(ticker_symbols, start_date, end_date):
     def sharpe_ratio(weights, log_returns, cov_matrix, risk_free_rate):
         return(expected_returns(weights, log_returns) - risk_free_rate ) / standard_deviation(weights, cov_matrix)
     
-    risk_free_rate = 0.02
+    risk_free_rate = 0.07
 
     # function to minimize the negative sharpe ratio
     def neg_sharpe_ratio(weights, log_returns, cov_matrix, risk_free_rate):
