@@ -26,6 +26,7 @@ padding:10px
 .ok{
     background-color:aqua;
     color:black; 
+    
 }
 .excellent{
     background-color:green;
